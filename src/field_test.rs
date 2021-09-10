@@ -6,9 +6,9 @@ fn create_field() {
     assert_eq!(true, field.can_play(0));
     assert_eq!(Ok(()), field.one_play(&Player::X, 0));
     assert_ne!(Ok(()), field.one_play(&Player::X, 0));
-    assert_eq!(Ok(()), field.one_play(&Player::Y, 2));
+    assert_eq!(Ok(()), field.one_play(&Player::O, 2));
 
-    assert!(field.check_if_win(&Player::O));
+    assert!(field.check_if_win(&Player::None));
     assert!(!field.check_if_win(&Player::X));
 }
 
@@ -22,7 +22,7 @@ fn player_win_line() {
     }
 
     assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::Y));
+    assert!(!field.check_if_win(&Player::O));
 }
 
 #[test] 
@@ -36,7 +36,7 @@ fn player_win_column() {
     }
 
     assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::Y)); 
+    assert!(!field.check_if_win(&Player::O)); 
 }
 
 #[test] 
@@ -50,7 +50,7 @@ fn player_win_diag_one() {
     }
 
     assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::Y)); 
+    assert!(!field.check_if_win(&Player::O)); 
 }
 
 #[test] 
@@ -64,5 +64,5 @@ fn player_win_diag_two() {
     }
 
     assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::Y)); 
+    assert!(!field.check_if_win(&Player::O)); 
 }
