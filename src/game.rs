@@ -36,7 +36,7 @@ pub struct Field {
 }
 
 impl Field {
-    pub fn new() -> Field {
+    pub fn new() -> Self {
         Field {
             play_filed: Default::default()
         }
