@@ -1,4 +1,7 @@
-use super::game::*;
+use super::game::Field;
+use super::game::GameStatus;
+use super::game::Player;
+
 
 #[test]
 fn create_field() {
@@ -8,8 +11,7 @@ fn create_field() {
     assert_ne!(Ok(()), field.one_play(&Player::X, 0));
     assert_eq!(Ok(()), field.one_play(&Player::O, 2));
 
-    assert!(field.check_if_win(&Player::None));
-    assert!(!field.check_if_win(&Player::X));
+    assert_eq!(GameStatus::Play, field.game_progress());
 }
 
 #[test] 
@@ -21,8 +23,7 @@ fn player_win_line() {
         assert_eq!(Ok(()), field.one_play(&player, point));
     }
 
-    assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::O));
+    assert_eq!(GameStatus::Win(Player::X), field.game_progress());
 }
 
 #[test] 
@@ -35,8 +36,8 @@ fn player_win_column() {
         assert_eq!(Ok(()), field.one_play(&player, point));
     }
 
-    assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::O)); 
+    assert_eq!(GameStatus::Win(Player::X), field.game_progress());
+
 }
 
 #[test] 
@@ -49,8 +50,8 @@ fn player_win_diag_one() {
         assert_eq!(Ok(()), field.one_play(&player, point));
     }
 
-    assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::O)); 
+    assert_eq!(GameStatus::Win(Player::X), field.game_progress());
+
 }
 
 #[test] 
@@ -63,6 +64,6 @@ fn player_win_diag_two() {
         assert_eq!(Ok(()), field.one_play(&player, point));
     }
 
-    assert!(field.check_if_win(&player));
-    assert!(!field.check_if_win(&Player::O)); 
+    assert_eq!(GameStatus::Win(Player::X), field.game_progress());
+
 }

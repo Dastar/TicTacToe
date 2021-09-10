@@ -1,6 +1,9 @@
 use std::io;
 
-use tictactoe::game::*;
+use tictactoe::game::Field;
+use tictactoe::game::GameStatus;
+use tictactoe::game::Player;
+
 
 fn main() {
     let mut field = Field::new();
