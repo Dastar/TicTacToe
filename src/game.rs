@@ -36,7 +36,7 @@ pub struct Field {
 }
 
 impl Field {
-    pub fn new() -> Field {
+    pub fn new() -> Self {
         Field {
             play_filed: Default::default()
         }
@@ -97,8 +97,8 @@ impl Field {
     }
 
     fn is_draw(&self) -> bool {
-        for i in self.play_filed {
-            if i == Player::None {
+        for i in self.play_filed.iter() {
+            if i == &Player::None {
                 return false;
             }
         }
