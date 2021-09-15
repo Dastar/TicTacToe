@@ -20,6 +20,15 @@ impl Default for Player {
     }
 }
 
+impl Player {
+    pub fn oponent(player: &Player) -> Player {
+        match player {
+            Player::X => Player::O,
+            _ => Player::X
+        }
+    }
+}
+
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
