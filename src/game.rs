@@ -21,7 +21,7 @@ impl Default for Player {
 }
 
 impl Player {
-    pub fn oponent(player: &Player) -> Player {
+    pub fn opponent(player: &Player) -> Player {
         match player {
             Player::X => Player::O,
             _ => Player::X
