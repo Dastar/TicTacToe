@@ -4,26 +4,22 @@ const COST: i32 = 1;
 const START_WEIGHT: i32 = 100;
 
 pub struct Node {
-    status: Status,
-    movement: usize,
+    pub status: Status,
+    pub movement: usize,
     weight: i32,
 }
 
 impl Node {
-    fn new(status: Status, movement: usize) -> Self {
+    pub fn new(status: Status, movement: usize) -> Self {
         let weight = START_WEIGHT;
         Node { status, movement, weight }
     }
 
-    fn value(&self) -> usize {
-        self.movement
-    }
-
-    fn increse_weight(&mut self) {
+    pub fn increse_weight(&mut self) {
         self.weight += COST;
     }
 
-    fn decrese_weight(&mut self) {
+    pub fn decrese_weight(&mut self) {
         self.weight -= COST;
     }
 }

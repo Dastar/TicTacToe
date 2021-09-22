@@ -2,7 +2,7 @@ mod node;
 mod list;
 mod memory;
 
-enum Status {
+pub enum Status {
     Progress,
     Win,
     Lose,
