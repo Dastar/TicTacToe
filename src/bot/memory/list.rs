@@ -29,9 +29,17 @@ impl List {
         List { list, moves }
     }
 
+    pub fn get_move(&mut self) {
+        self.add_nodes().unwrap_or(());
+    }
+
     fn add_nodes(&mut self) -> Result<(), &str> {
         if self.list.len() == 1 {
             return Err("cannot add new nodes");
+        }
+
+        if let Link::Next(_) = self.list[0].link {
+            return Err("there is a next line already");
         }
 
         // creating next line of nodes
@@ -75,8 +83,8 @@ mod tests_list {
         assert_eq!(list.moves.len(), 9);
 
         assert_eq!(list.add_nodes(), Ok(()));
-        for n in list.list {
-            match n.link {
+        for n in &list.list {
+            match &n.link {
                 Link::Empty => assert!(false),
                 Link::Next(l) => {
                     assert_eq!(l.moves.len(), 8);
@@ -88,5 +96,7 @@ mod tests_list {
             }
             
         }
+        
+        assert_eq!(list.add_nodes(), Err("there is a next line already"));
     }
 }
