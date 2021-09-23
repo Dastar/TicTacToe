@@ -62,17 +62,22 @@ pub mod play {
         let mut playing = Player::X;
         let mut bot_one = play_bot::Bot::new(Player::X);
         let mut bot_two = play_bot::Bot::new(Player::O);
-        
+        let mut total_games: usize = 0;
         loop {
             match field.game_progress() {
                 GameStatus::Win(player) => {
-                    match player {
-                        Player::None => println!("It is draw"),
-                        _ => println!("Player {} won", player),
+                    total_games += 1;
+                    if total_games % 10 == 0 {
+                        bot_one.statistics(total_games);
                     }
-                    println!("{}", field);
-                    thread::sleep(time::Duration::from_secs(1));
 
+                    // match player {
+                    //     Player::None => println!("It is draw"),
+                    //     _ => println!("Player {} won", player),
+                    // }
+                    // println!("{}", field);
+
+                    thread::sleep(time::Duration::from_millis(200));
                     bot_one.end(player);
                     bot_two.end(player);
                     playing = Player::X;

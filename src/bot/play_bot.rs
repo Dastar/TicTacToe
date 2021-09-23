@@ -1,7 +1,7 @@
 use crate::game;
 use crate::bot::memory::memory::Memory;
 pub struct Bot {
-    memory: Memory
+    memory: Memory,
 }
 
 impl Bot {
@@ -16,6 +16,15 @@ impl Bot {
 
     pub fn end(&mut self, winner: game::Player) {
         self.memory.end_game(winner);
+    }
+
+    pub fn statistics(&self, total_games: usize) {
+        println!("Wins: {}, Loses: {}, Draws: {}, total games: {}", self.memory.win, self.memory.lose, self.memory.draw, total_games);
+        let wins = self.memory.win * 100 / total_games;
+        let loses = self.memory.lose * 100 / total_games;
+        let draws = self.memory.draw * 100 / total_games;
+
+        println!("Wins: {}%, Loses: {}%, Draws: {}%", wins, loses, draws);
     }
 
     fn save_move(&mut self, field: &mut game::Field) {
