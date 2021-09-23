@@ -88,7 +88,7 @@ impl List {
 
                 next.node.set_end(status);
             },
-            
+
             None => {
                 let last = self.list.iter_mut().find(|next| &next.node.status == status);
                 match last {
@@ -185,8 +185,8 @@ mod tests_list {
         list.set_move(1);
         assert_eq!(list.get_move(), 0);
         assert_eq!(list.get_move(), 0);
-
         list.end_game(&Status::Win);
+
         assert_eq!(list.get_move(), 8);
         list.set_move(4);
         assert_eq!(list.get_move(), 7);
@@ -194,6 +194,9 @@ mod tests_list {
         assert_eq!(list.get_move(), 5);
         list.set_move(3);
         assert_eq!(list.get_move(), 2);
+        list.set_move(0);
+        assert_eq!(list.get_move(), 1);
+        list.end_game(&Status::Lose);
     }
 
     #[test]

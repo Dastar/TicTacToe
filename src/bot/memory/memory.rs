@@ -1,47 +1,37 @@
 use crate::game::Player;
 //use crate::game::Field;
 use crate::bot::memory::list::List;
+use crate::bot::memory::Status;
 //use crate::bot::memory::node::Node;
 
-struct Memory {
+pub struct Memory {
     player: Player,
     long_memory: List,
 }
 
-// impl<'a> Memory<'a> {
+impl Memory {
+    pub fn new(player: Player) -> Self {
+        let long_memory = List::new();
+        Memory { player, long_memory }
+    }
 
-//     pub fn create_table(&mut self, field: &Field, player: Player) {
-//         for i in 0..9 {
-//             if field.can_play(i) {
-//                // self.moves.push(Box::new(Memory::new(!self.my_move, player, Status::Move(i))));
-//             }
-//         }
-//     }
+    pub fn get_move(&mut self) -> usize {
+        self.long_memory.get_move()
+    }
 
-//     pub fn get_next_move(&mut self) {
-//         let mut next_move = self.find_active();
-//         match next_move {
-//             Some(m) => {
+    pub fn set_move(&mut self, movement: usize) {
+        self.long_memory.set_move(movement);
+    }
 
-//             },
-//             None => {
-                
-//             }
-//         }
-//     }
-
-//     fn find_active(&mut self) -> Option<&mut Memory> {
-//         // for m in self.moves.iter_mut() {
-//         //     if m.active {
-//         //         return Some(m.as_mut());
-//         //     }
-//         // }
-
-//         None
-//     }
-
-//     //fn find_weighted(&mut self) -> &mut Memory {
-//         //self.moves.iter_mut().max_by_key(|m| m.weight).unwrap()
-
-//     //}
-// }
+    pub fn end_game(&mut self, winner: Player) {
+        if winner == self.player {
+            self.long_memory.end_game(&Status::Win);
+        }
+        else if winner == Player::None {
+            self.long_memory.end_game(&Status::Draw);
+        }
+        else {
+            self.long_memory.end_game(&Status::Lose);
+        }
+    }
+}
