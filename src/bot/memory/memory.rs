@@ -1,12 +1,11 @@
 use crate::game::Player;
 //use crate::game::Field;
 use crate::bot::memory::list::List;
-use crate::bot::memory::node::Node;
+//use crate::bot::memory::node::Node;
 
-struct Memory<'a> {
+struct Memory {
     player: Player,
     long_memory: List,
-    short_memory: Vec<&'a mut Node>
 }
 
 // impl<'a> Memory<'a> {

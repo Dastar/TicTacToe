@@ -16,6 +16,7 @@ struct Next {
     link: Link,
 }
 
+/// For now this implementation take some assumptions that one cannot play twice the same move
 impl List {
     pub fn new() -> Self {
         let mut list: Vec<Next> = Vec::new();
@@ -47,6 +48,24 @@ impl List {
                 let mut n = self.list.iter_mut().max_by_key(|m| m.node.weight).unwrap();
                 n.node.active = true;
                 n.node.movement.clone()
+            }
+        }
+    }
+
+    pub fn set_move(&mut self, movement: usize) {
+        let active = self.list.iter_mut().find(|next| next.node.active);
+        match active {
+            Some(next) => {
+                if let Link::Next(link) = &mut next.link {
+                    link.set_move(movement);
+                }
+            },
+            None => {
+                for next in self.list.iter_mut() {
+                    if next.node.movement == movement {
+                        next.node.active = true;
+                    }
+                }
             }
         }
     }
@@ -119,13 +138,13 @@ mod tests_list {
         }
 
         assert_eq!(list.get_move(), 8);
-        assert_eq!(list.get_move(), 7);
+        list.set_move(7);
         assert_eq!(list.get_move(), 6);
+        list.set_move(4);
         assert_eq!(list.get_move(), 5);
-        assert_eq!(list.get_move(), 4);
-        assert_eq!(list.get_move(), 3);
+        list.set_move(3);
         assert_eq!(list.get_move(), 2);
-        assert_eq!(list.get_move(), 1);
+        list.set_move(1);
         assert_eq!(list.get_move(), 0);
         assert_eq!(list.get_move(), 0);
 
