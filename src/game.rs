@@ -10,7 +10,6 @@ pub enum Player {
 #[derive(PartialEq, Debug)]
 pub enum GameStatus {
     Win(Player),
-    Draw,
     Play
 }
 
@@ -41,19 +40,22 @@ impl fmt::Display for Player {
 }
 
 pub struct Field {
-    play_filed: [Player; 9],
+    filed: [Player; 9],
+    pub last_turn: Option<usize>
 }
 
 impl Field {
     pub fn new() -> Self {
         Field {
-            play_filed: Default::default()
+            filed: Default::default(),
+            last_turn: None
         }
     }
 
     pub fn one_play(&mut self, player: &Player, point: usize) -> Result<(), String> {
         if self.can_play(point) {
-            self.play_filed[point] = player.clone();
+            self.filed[point] = player.clone();
+            self.last_turn = Some(point);
         }
         else {
             return Err(String::from("One cannot play here"));
@@ -63,7 +65,7 @@ impl Field {
     }
 
     pub fn can_play(&self, point: usize) -> bool {
-        self.play_filed[point] == Player::None
+        self.filed[point] == Player::None
     }
 
     fn check_if_win(&self, player: &Player) -> bool {
@@ -99,14 +101,14 @@ impl Field {
         }
 
         if self.is_draw() {
-            return GameStatus::Draw;
+            return GameStatus::Win(Player::None);
         }
 
         GameStatus::Play
     }
 
     fn is_draw(&self) -> bool {
-        for i in self.play_filed.iter() {
+        for i in self.filed.iter() {
             if i == &Player::None {
                 return false;
             }
@@ -118,7 +120,7 @@ impl Field {
     fn check_index<T>(&self, player: &Player, indexer: T) -> bool
         where T: Fn(usize) -> usize {
         for i in 0..3 {                
-            if self.play_filed[indexer(i)] != *player { 
+            if self.filed[indexer(i)] != *player { 
                 return false
             }
         }
@@ -133,7 +135,7 @@ impl fmt::Display for Field {
 
         for i in 0..3 {
             for q in 0..3 {
-                let point = format!("{}", self.play_filed[3 * i + q].to_string());
+                let point = format!("{}", self.filed[3 * i + q].to_string());
                 output.push_str(&point);
                 if q != 2 {
                     output.push_str(" | ");

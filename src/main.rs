@@ -2,6 +2,6 @@ use tictactoe::play;
 
 
 fn main() {
-    play::play_game();
+    play::play_bots();
 
 }

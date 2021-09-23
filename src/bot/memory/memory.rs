@@ -5,7 +5,7 @@ use crate::bot::memory::Status;
 //use crate::bot::memory::node::Node;
 
 pub struct Memory {
-    player: Player,
+    pub player: Player,
     long_memory: List,
 }
 
