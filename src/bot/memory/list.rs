@@ -70,6 +70,38 @@ impl List {
         }
     }
 
+    pub fn end_game(&mut self, status: &Status) {
+        let active = self.list.iter_mut().find(|next| next.node.active);
+        match active {
+            Some(next) => {
+                match &mut next.link {
+                    Link::Next(link) => {
+                        // we need to search for next active to make sure that game not ends here
+                        let sub_active = link.list.iter_mut().find(|next| next.node.active);
+                        match sub_active {
+                            None => next.node.status = status.clone(),
+                            Some(_) => link.end_game(status),
+                        }
+                    }
+                    Link::Empty => next.node.status = status.clone(),
+                }
+
+                next.node.set_end(status);
+            },
+            
+            None => {
+                let last = self.list.iter_mut().find(|next| &next.node.status == status);
+                match last {
+                    Some(next) => {
+                        next.node.set_end(status);
+                        next.link = Link::Empty;
+                    },
+                    None => panic!("No last turn active"),
+                }
+            },
+        }
+    }
+
     fn add_nodes(&mut self) -> Result<(), &str> {
         if self.list.len() == 1 {
             return Err("cannot add new nodes");
@@ -116,7 +148,7 @@ impl List {
 mod tests_list {
     use crate::bot::memory::list::List;
     use crate::bot::memory::list::Link;
-
+    use crate::bot::memory::Status;
     #[test]
     fn create_list() {
         let mut list = List::new();
@@ -137,6 +169,12 @@ mod tests_list {
             
         }
 
+        assert_eq!(list.add_nodes(), Err("there is a next line already"));
+    }
+
+    #[test]
+    fn play() {
+        let mut list = List::new();
         assert_eq!(list.get_move(), 8);
         list.set_move(7);
         assert_eq!(list.get_move(), 6);
@@ -148,6 +186,26 @@ mod tests_list {
         assert_eq!(list.get_move(), 0);
         assert_eq!(list.get_move(), 0);
 
-        assert_eq!(list.add_nodes(), Err("there is a next line already"));
+        list.end_game(&Status::Win);
+        assert_eq!(list.get_move(), 8);
+        list.set_move(4);
+        assert_eq!(list.get_move(), 7);
+        list.set_move(6);
+        assert_eq!(list.get_move(), 5);
+        list.set_move(3);
+        assert_eq!(list.get_move(), 2);
+    }
+
+    #[test]
+    fn partial_game() {
+        let mut list = List::new();
+        assert_eq!(list.get_move(), 8);
+        list.set_move(4);
+        assert_eq!(list.get_move(), 7);
+        list.set_move(6);
+        assert_eq!(list.get_move(), 5);
+        list.set_move(3);
+        assert_eq!(list.get_move(), 2);
+        list.end_game(&Status::Win);
     }
 }

@@ -17,18 +17,29 @@ impl Node {
         Node { status, movement, active, weight }
     }
 
-    pub fn won(&mut self) {
+    pub fn set_end(&mut self, status: &Status) {
+        if !self.active {
+            panic!("the node is not active");
+        }
+
         self.active = false;
+        match status {
+            Status::Draw => self.draw(),
+            Status::Lose => self.lost(),
+            Status::Win => self.won(),
+            _ => {}
+        }
+    }
+
+    fn won(&mut self) {
         self.weight += COST;
     }
 
-    pub fn lost(&mut self) {
-        self.active = false;
+    fn lost(&mut self) {
         self.weight -= 2 * COST;
     }
 
-    pub fn draw(&mut self) {
-        self.active = false;
+    fn draw(&mut self) {
         self.weight -= COST;
     }
 }
