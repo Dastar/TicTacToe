@@ -22,15 +22,33 @@ impl List {
         let mut moves: Vec<usize> = Vec::new();
 
         for movement in 0..9 {
-            list.push(List::get_elem(movement));
+            list.push(List::get_next_elem(movement));
             moves.push(movement)
         }
 
         List { list, moves }
     }
 
-    pub fn get_move(&mut self) {
+    pub fn get_move(&mut self) -> usize {
         self.add_nodes().unwrap_or(());
+
+        // first we search for an active node
+        // if found we go to next line
+        // else take node with greatest weight
+        let active = self.list.iter_mut().find(|next| next.node.active);
+        match active {
+            Some(next) => {
+                match &mut next.link {
+                    Link::Empty => next.node.movement.clone(),
+                    Link::Next(link) => link.get_move(),
+                }
+            },
+            None => {
+                let mut n = self.list.iter_mut().max_by_key(|m| m.node.weight).unwrap();
+                n.node.active = true;
+                n.node.movement.clone()
+            }
+        }
     }
 
     fn add_nodes(&mut self) -> Result<(), &str> {
@@ -55,8 +73,11 @@ impl List {
                     continue;
                 }
 
-                list.push(List::get_elem(movement));
-                moves.push(movement)
+                // no need to add a row if this node is last
+                if let Status::Progress = element.node.status {
+                    list.push(List::get_next_elem(movement));
+                    moves.push(movement)
+                }
 
             }
 
@@ -66,7 +87,7 @@ impl List {
         Ok(())
     }
 
-    fn get_elem(movement: usize) -> Next {
+    fn get_next_elem(movement: usize) -> Next {
         Next { node: Node::new(Status::Progress, movement), link: Link::Empty }
     }
 
@@ -96,7 +117,18 @@ mod tests_list {
             }
             
         }
-        
+
+        assert_eq!(list.get_move(), 8);
+        assert_eq!(list.get_move(), 7);
+        assert_eq!(list.get_move(), 6);
+        assert_eq!(list.get_move(), 5);
+        assert_eq!(list.get_move(), 4);
+        assert_eq!(list.get_move(), 3);
+        assert_eq!(list.get_move(), 2);
+        assert_eq!(list.get_move(), 1);
+        assert_eq!(list.get_move(), 0);
+        assert_eq!(list.get_move(), 0);
+
         assert_eq!(list.add_nodes(), Err("there is a next line already"));
     }
 }
