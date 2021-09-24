@@ -14,6 +14,11 @@ impl Bot {
         self.play_move(field);
     }
 
+    pub fn learn(&mut self, field: &mut game::Field) {
+        //self.save_move(field);
+        self.learn_move(field);
+    }
+
     pub fn end(&mut self, winner: game::Player) {
         self.memory.end_game(winner);
     }
@@ -35,8 +40,13 @@ impl Bot {
         }
     }
 
+    fn learn_move(&mut self, field: &mut game::Field) {
+        let point = self.memory.learn_move();
+        field.one_play(&self.memory.player, point).unwrap_or_default();
+    }
+
     fn play_move(&mut self, field: &mut game::Field) {
-        let point = self.memory.get_move();
+        let point = self.memory.play_move();
         field.one_play(&self.memory.player, point).unwrap_or_default();
     }
 }

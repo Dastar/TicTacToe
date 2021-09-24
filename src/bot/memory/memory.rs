@@ -23,9 +23,14 @@ impl Memory {
         Memory { player, lose, win, draw, memory, turns }
     }
 
-    pub fn get_move(&mut self) -> usize {
+    pub fn learn_move(&mut self) -> usize {
         self.turns += 1;
-        self.memory.get_move()
+        self.memory.learn_move()
+    }
+
+    pub fn play_move(&mut self) -> usize {
+        self.turns += 1;
+        self.memory.play_move()
     }
 
     pub fn set_move(&mut self, movement: usize) {

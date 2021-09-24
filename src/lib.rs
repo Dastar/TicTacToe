@@ -145,13 +145,13 @@ pub mod play {
                 GameStatus::Play => {
                     match playing {
                         Player::X => {
-                            bots.bot_x.play(&mut field);   
+                            bots.bot_x.learn(&mut field);   
                             bots.bot_o.save_move(&mut field);                         
                             playing = Player::O;
                         }
                         
                         _ => {
-                            bots.bot_o.play(&mut field);
+                            bots.bot_o.learn(&mut field);
                             bots.bot_x.save_move(&mut field);
                             playing = Player::X;
                         }

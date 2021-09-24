@@ -1,6 +1,7 @@
+use std::cmp::Ordering;
+use rand::prelude::*;
 use crate::bot::memory::node::Node;
 use crate::bot::memory::Status;
-use rand::prelude::*;
 
 enum Link {
     Empty,
@@ -17,6 +18,27 @@ struct Next {
     link: Link,
 }
 
+#[derive(PartialEq,PartialOrd)]
+struct Float(f64);
+
+impl Float {
+    fn new(val: f64) -> Option<Self> {
+        if val.is_nan() {
+            None
+        } else {
+            Some(Float(val))
+        }
+    }
+}
+
+impl Eq for Float {}
+
+impl Ord for Float {
+    fn cmp(&self, other: &Float) -> Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+
 /// For now this implementation take some assumptions that one cannot play twice the same move
 impl List {
     pub fn new() -> Self {
@@ -31,7 +53,26 @@ impl List {
         List { list, moves }
     }
 
-    pub fn get_move(&mut self) -> usize {
+    pub fn play_move(&mut self) -> usize {
+        self.get_move(|l| l.iter_mut()
+                                                  .max_by_key(|m| Float::new(m.node.weight()))
+                                                  .unwrap()
+                    )
+    }
+
+    pub fn learn_move(&mut self) -> usize {
+        self.get_move(|l| {
+            let mut rng = thread_rng();
+            let res = l.choose_weighted_mut(&mut rng, |next| next.node.weight());
+            match res {
+                Ok(n) => n,
+                Err(e) => panic!("{}", e),
+            }
+        })
+    }
+
+    pub fn get_move<F>(&mut self, take_node: F) -> usize where
+    F: Fn(&mut Vec<Next>) -> &mut Next {
         self.add_nodes().unwrap_or(());
 
         // first we search for an active node
@@ -42,21 +83,13 @@ impl List {
             Some(next) => {
                 match &mut next.link {
                     Link::Empty => next.node.movement.clone(),
-                    Link::Next(link) => link.get_move(),
+                    Link::Next(link) => link.get_move(take_node),
                 }
             },
             None => {
-                let mut rng = thread_rng();
-                let res = self.list.choose_weighted_mut(&mut rng, |next| next.node.weight());
-                //let mut n = self.list.iter_mut().max_by_key(|m| m.node.weight).unwrap();
-                //let n = res.expect(msg)
-                match res {
-                    Ok(n) => {
-                        n.node.active = true;
-                        n.node.movement.clone()
-                    },
-                    Err(e) => panic!("{}", e),
-                }
+                let n = take_node(&mut self.list);
+                n.node.active = true;
+                n.node.movement.clone()
 
             }
         }
