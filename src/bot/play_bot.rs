@@ -1,12 +1,13 @@
 use crate::game;
 use crate::bot::memory::memory::Memory;
 pub struct Bot {
+    pub player: game::Player,
     memory: Memory,
 }
 
 impl Bot {
     pub fn new(player: game::Player) -> Self {
-        Bot { memory: Memory::new(player) }
+        Bot { player, memory: Memory::new(player) }
     }
     
     pub fn play(&mut self, field: &mut game::Field) {
