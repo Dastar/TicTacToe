@@ -25,6 +25,7 @@ impl Bot {
         let draws = self.memory.draw * 100 / total_games;
 
         println!("Wins: {}%, Loses: {}%, Draws: {}%", wins, loses, draws);
+        println!();
     }
 
     fn save_move(&mut self, field: &mut game::Field) {

@@ -1,13 +1,14 @@
+use std::f64::consts::E;
 use crate::bot::memory::Status;
 
-const COST: i32 = 1;
-const START_WEIGHT: i32 = 100;
+const COST: f64 = 0.1;
+const START_WEIGHT: f64 = 1.0;
 
 pub struct Node {
     pub status: Status,
     pub movement: usize,
     pub active: bool,
-    pub weight: i32,
+    pub weight: f64,
 }
 
 impl Node {
@@ -17,7 +18,7 @@ impl Node {
         Node { status, movement, active, weight }
     }
 
-    pub fn set_end(&mut self, status: &Status) {
+    pub fn set_end(&mut self, status: &Status, turns: i32) {
         if !self.active {
             panic!("the node is not active");
         }
@@ -25,21 +26,29 @@ impl Node {
         self.active = false;
         match status {
             Status::Draw => self.draw(),
-            Status::Lose => self.lost(),
-            Status::Win => self.won(),
+            Status::Lose => self.lost(turns),
+            Status::Win => self.won(turns),
             _ => {}
         }
     }
 
-    fn won(&mut self) {
-        self.weight += COST;
+    pub fn weight(&self) -> f64 {
+        if self.weight > 0.0 {
+            return self.weight.clone();
+        }
+
+        E.powf(self.weight)
     }
 
-    fn lost(&mut self) {
-        self.weight -= 2 * COST;
+    fn won(&mut self, turns: i32) {
+        self.weight += COST * 9.0 - 1.0 / (turns as f64);
+    }
+
+    fn lost(&mut self, turns: i32) {
+        self.weight -= COST * (turns as f64);
     }
 
     fn draw(&mut self) {
-        self.weight -= COST;
+        self.weight += COST * 2.0;
     }
 }

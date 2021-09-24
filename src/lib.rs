@@ -7,11 +7,46 @@ pub mod play {
     use crate::bot::play_bot;
     use std::io;
     use std::{thread, time};
+
+    const TOTAL_GAMES: usize = 80000;
+    struct  Bots {
+        bot_x: play_bot::Bot,
+        bot_o: play_bot::Bot,
+    }
+
+    impl Bots {
+        fn new() -> Self {
+            let bot_x = play_bot::Bot::new(Player::X);
+            let bot_o = play_bot::Bot::new(Player::O);
+            Bots { bot_x, bot_o }
+        }
+    }
     
-    pub fn play_game() {
+    pub fn play() {
+        let mut bots = Bots::new();
+        play_bots(&mut bots);
+        play_game(&mut bots.bot_x);
+    }
+
+    fn parse(c: char) -> usize {
+        match c {
+            'q' => 1,
+            'w' => 2,
+            'e' => 3,
+            'a' => 4,
+            's' => 5,
+            'd' => 6,
+            'z' => 7,
+            'x' => 8,
+            'c' => 9,
+            _ => 1,
+        }
+    }
+
+    pub fn play_game(computer: &mut play_bot::Bot) {
         let mut field = Field::new();
         let mut playing = Player::X;
-        let mut computer = play_bot::Bot::new(Player::O);
+        //let mut computer = play_bot::Bot::new(Player::O);
         
         loop {
             println!("{}", field);
@@ -27,7 +62,7 @@ pub mod play {
                 },
                 GameStatus::Play => {
                     match playing {
-                        Player::X => {
+                        Player::O => {
                             println!("Enter point:");
                             let mut point = String::new();
                             
@@ -35,19 +70,19 @@ pub mod play {
                             .read_line(&mut point)
                             .expect("Failed to read line");
                             
-                            let point: usize = point.trim().parse().unwrap_or(1);
+                            let point: char = point.trim().parse().unwrap_or('q');
                             
-                            if let Err(_) = field.one_play(&playing, point - 1) {
+                            if let Err(_) = field.one_play(&playing, parse(point) - 1) {
                                 println!("Cant go here");
                                 continue;
                             }
                             
-                            playing = Player::O;
+                            playing = Player::X;
                         }
                         
                         _ => {
                             computer.play(&mut field);
-                            playing = Player::X;
+                            playing = Player::O;    
                         }
                     }
                     
@@ -56,19 +91,23 @@ pub mod play {
         }
     }
 
+    fn print(output: &bool, field: &Field) {
+        if *output {
+            println!("{}", field);
+        }
+    }
 
-    pub fn play_bots() {
+    fn play_bots(bots: &mut Bots) {
         let mut field = Field::new();
         let mut playing = Player::X;
-        let mut bot_one = play_bot::Bot::new(Player::X);
-        let mut bot_two = play_bot::Bot::new(Player::O);
         let mut total_games: usize = 0;
+        let mut output = false;
         loop {
             match field.game_progress() {
                 GameStatus::Win(player) => {
                     total_games += 1;
-                    if total_games % 10 == 0 {
-                        bot_one.statistics(total_games);
+                    if total_games % 1000 == 0 {
+                        bots.bot_x.statistics(total_games);
                     }
 
                     // match player {
@@ -77,24 +116,30 @@ pub mod play {
                     // }
                     // println!("{}", field);
 
-                    thread::sleep(time::Duration::from_millis(200));
-                    bot_one.end(player);
-                    bot_two.end(player);
+                    //thread::sleep(time::Duration::from_millis(100));
+                    bots.bot_x.end(player);
+                    bots.bot_o.end(player);
                     playing = Player::X;
                     field = Field::new();
+
+                    if total_games == TOTAL_GAMES {
+                        output = true;
+                        break;
+                    }
                 },
                 GameStatus::Play => {
                     match playing {
                         Player::X => {
-                            bot_one.play(&mut field);                            
+                            bots.bot_x.play(&mut field);                            
                             playing = Player::O;
                         }
                         
                         _ => {
-                            bot_two.play(&mut field);
+                            bots.bot_o.play(&mut field);
                             playing = Player::X;
                         }
                     }
+                    print(&output, &field);
                     
                 },
             }
