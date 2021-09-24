@@ -1,8 +1,8 @@
 use std::f64::consts::E;
 use crate::bot::memory::Status;
 
-const COST: f64 = 0.1;
-const START_WEIGHT: f64 = 1.0;
+const COST: f64 = 1.0 / 64.0;
+const START_WEIGHT: f64 = 2.0;
 
 pub struct Node {
     pub status: Status,
@@ -41,7 +41,7 @@ impl Node {
     }
 
     fn won(&mut self, turns: i32) {
-        self.weight += COST * 9.0 - 1.0 / (turns as f64);
+        self.weight += COST * 9.0;// - 1.0 / (turns as f64);
     }
 
     fn lost(&mut self, turns: i32) {
@@ -49,6 +49,6 @@ impl Node {
     }
 
     fn draw(&mut self) {
-        self.weight += COST * 2.0;
+        self.weight += COST;
     }
 }

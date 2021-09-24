@@ -8,7 +8,8 @@ pub mod play {
     use std::io;
     use std::{thread, time};
 
-    const TOTAL_GAMES: usize = 80000;
+    const TOTAL_GAMES: usize = 400000;
+    const STATISTIC_STEP: usize = 20000;
     struct  Bots {
         bot_x: play_bot::Bot,
         bot_o: play_bot::Bot,
@@ -63,32 +64,46 @@ pub mod play {
                 GameStatus::Play => {
                     match playing {
                         Player::O => {
-                            println!("Enter point:");
-                            let mut point = String::new();
-                            
-                            io::stdin()
-                            .read_line(&mut point)
-                            .expect("Failed to read line");
-                            
-                            let point: char = point.trim().parse().unwrap_or('q');
-                            
-                            if let Err(_) = field.one_play(&playing, parse(point) - 1) {
-                                println!("Cant go here");
+                            if !human_play(&mut field, &playing) {
                                 continue;
-                            }
-                            
-                            playing = Player::X;
+                            }        
+                            computer.save_move(&mut field);                    
                         }
                         
                         _ => {
-                            computer.play(&mut field);
-                            playing = Player::O;    
+                            computer.play(&mut field);  
                         }
                     }
+
+                    playing = swap_players(playing);
                     
                 },
             }
         }
+    }
+
+    fn swap_players(p: Player) -> Player {
+        match p {
+            Player::X => Player::O,
+            _ => Player::X
+        }
+    } 
+
+    fn human_play(field: &mut Field, playing: &Player) -> bool {
+        println!("Enter point:");
+        let mut point = String::new();
+       
+        io::stdin()
+        .read_line(&mut point)
+        .expect("Failed to read line");
+       
+        let point: char = point.trim().parse().unwrap_or('q');
+       
+        if let Err(_) = field.one_play(&playing, parse(point) - 1) {
+            println!("Cant go here");
+            return false;
+        }
+        true
     }
 
     fn print(output: &bool, field: &Field) {
@@ -101,12 +116,12 @@ pub mod play {
         let mut field = Field::new();
         let mut playing = Player::X;
         let mut total_games: usize = 0;
-        let mut output = false;
+        let output = false;
         loop {
             match field.game_progress() {
                 GameStatus::Win(player) => {
                     total_games += 1;
-                    if total_games % 1000 == 0 {
+                    if total_games % STATISTIC_STEP == 0 {
                         bots.bot_x.statistics(total_games);
                     }
 
@@ -123,19 +138,21 @@ pub mod play {
                     field = Field::new();
 
                     if total_games == TOTAL_GAMES {
-                        output = true;
+                     //   output = true;
                         break;
                     }
                 },
                 GameStatus::Play => {
                     match playing {
                         Player::X => {
-                            bots.bot_x.play(&mut field);                            
+                            bots.bot_x.play(&mut field);   
+                            bots.bot_o.save_move(&mut field);                         
                             playing = Player::O;
                         }
                         
                         _ => {
                             bots.bot_o.play(&mut field);
+                            bots.bot_x.save_move(&mut field);
                             playing = Player::X;
                         }
                     }

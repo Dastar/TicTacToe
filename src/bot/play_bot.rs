@@ -10,7 +10,7 @@ impl Bot {
     }
     
     pub fn play(&mut self, field: &mut game::Field) {
-        self.save_move(field);
+        //self.save_move(field);
         self.play_move(field);
     }
 
@@ -19,16 +19,16 @@ impl Bot {
     }
 
     pub fn statistics(&self, total_games: usize) {
-        println!("Wins: {}, Loses: {}, Draws: {}, total games: {}", self.memory.win, self.memory.lose, self.memory.draw, total_games);
+        //println!("Wins: {}, Loses: {}, Draws: {}, total games: {}", self.memory.win, self.memory.lose, self.memory.draw, total_games);
         let wins = self.memory.win * 100 / total_games;
         let loses = self.memory.lose * 100 / total_games;
         let draws = self.memory.draw * 100 / total_games;
 
-        println!("Wins: {}%, Loses: {}%, Draws: {}%", wins, loses, draws);
-        println!();
+        println!("Wins: {}%, Loses: {}%, Draws: {}%, Total: {}", wins, loses, draws, total_games);
+        //println!();
     }
 
-    fn save_move(&mut self, field: &mut game::Field) {
+    pub fn save_move(&mut self, field: &mut game::Field) {
         let last_turn = field.last_turn;
         if let Some(movement) = last_turn {
             self.memory.set_move(movement);
