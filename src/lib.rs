@@ -6,10 +6,9 @@ pub mod play {
     use super::game::*;
     use crate::bot::play_bot;
     use std::io;
-    use std::{thread, time};
 
-    const TOTAL_GAMES: usize = 400000;
-    const STATISTIC_STEP: usize = 20000;
+    const TOTAL_GAMES: usize = 1000000;
+    const STATISTIC_STEP: usize = 50000;
     struct  Bots {
         bot_x: play_bot::Bot,
         bot_o: play_bot::Bot,
@@ -26,7 +25,7 @@ pub mod play {
     pub fn play() {
         let mut bots = Bots::new();
         play_bots(&mut bots);
-        play_game(&mut bots.bot_x);
+        play_game(&mut bots.bot_o);
     }
 
     fn parse(c: char) -> usize {
@@ -63,7 +62,7 @@ pub mod play {
                 },
                 GameStatus::Play => {
                     match playing {
-                        Player::O => {
+                        Player::X => {
                             if !human_play(&mut field, &playing) {
                                 continue;
                             }        

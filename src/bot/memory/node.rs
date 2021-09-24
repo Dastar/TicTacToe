@@ -27,7 +27,7 @@ impl Node {
         match status {
             Status::Draw => self.draw(),
             Status::Lose => self.lost(turns),
-            Status::Win => self.won(turns),
+            Status::Win => self.won(),
             _ => {}
         }
     }
@@ -40,7 +40,7 @@ impl Node {
         E.powf(self.weight)
     }
 
-    fn won(&mut self, turns: i32) {
+    fn won(&mut self) {
         self.weight += COST * 9.0;// - 1.0 / (turns as f64);
     }
 

@@ -71,8 +71,8 @@ impl List {
         })
     }
 
-    pub fn get_move<F>(&mut self, take_node: F) -> usize where
-    F: Fn(&mut Vec<Next>) -> &mut Next {
+    fn get_move<F>(&mut self, take_node: F) -> usize where
+            F: Fn(&mut Vec<Next>) -> &mut Next {
         self.add_nodes().unwrap_or(());
 
         // first we search for an active node
@@ -191,7 +191,7 @@ impl List {
 mod tests_list {
     use crate::bot::memory::list::List;
     use crate::bot::memory::list::Link;
-    use crate::bot::memory::Status;
+    //use crate::bot::memory::Status;
     #[test]
     fn create_list() {
         let mut list = List::new();
